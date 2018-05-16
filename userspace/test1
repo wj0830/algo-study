@@ -1,0 +1,427 @@
+public class DenseRank {
+	
+	/**
+	 * Dense Ranking을 구하는 메소드
+	 *  
+	 * @param input {사번, 점수} Array
+	 * @return 정렬된 {사번, 점수, 순위} Array
+	 */
+	public static int[][] rank(int[][] input) {
+		int[][] result = new int[input.length][3];
+		
+		List<int[]> list = new ArrayList<int[]>();
+		
+		for(int inx=0; inx < input.length; inx++ ) {
+			list.add(input[inx]);
+		}
+		
+		list.sort(new Comparator<int[]>() {
+
+			@Override
+			public int compare(int[] a, int[] b) {
+				
+				int sa = a[1];
+				int sb = b[1];
+				
+				if( sa > sb ) {
+					return -1;
+				}else if ( sa < sb ) {
+					return 1;
+				}else {
+					if( a[0] > b[0] ) {
+						return 1;
+					}else if( a[0] > b[0] ) {
+						return -1;
+					}else {
+						return 0;
+					}
+				}
+			}
+		});
+		
+		int rank = 0;
+		int prev = 0;
+		
+		for(int inx=0; inx < list.size(); inx++ ) {
+			result[inx][0] = list.get(inx)[0];
+			result[inx][1] = list.get(inx)[1];
+			
+			if( prev != list.get(inx)[1] ) {
+				rank++;				
+			}
+			result[inx][2] = rank;
+			
+			prev = list.get(inx)[1];
+		}
+		
+		
+		
+		return result;
+	}
+}
+
+public class Employee {
+	
+	/**
+	 * 사원정보를 출력하는 메소드
+	 * 출력결과는 {부서명, 사원번호, 사원명} 순으로 저장된다.
+	 * 
+	 * @param department 부서정보
+	 * @param employee 사원정보
+	 * @return 
+	 */
+	public static String[][] print(String[][] department, String[][] employee) {
+		String [][] result = new String[employee.length][3];
+		
+		List<List<String>> list = new ArrayList<List<String>>();
+		
+		Map<String, String> dept = new LinkedHashMap<String, String>();
+		
+		for(int inx=0; inx< department.length; inx++) {
+			dept.put(department[inx][0], department[inx][1]);
+		}
+		
+		for(int inx=0; inx< employee.length; inx++) {
+			List<String> emp = new ArrayList<String>(Arrays.asList(employee[inx]));
+			
+			emp.add(dept.get(emp.get(2)));
+			
+			list.add(emp);			
+		}
+		
+		list.sort(new Comparator<List<String>>() {
+
+			@Override
+			public int compare(List<String> a, List<String> b) {
+				// TODO Auto-generated method stub
+				if( a.get(2).equals(b.get(2)) ) {
+					return a.get(1).compareTo(b.get(1));
+				}				
+				
+				return a.get(2).compareTo(b.get(2));
+			}
+		});
+		
+		for(int inx=0; inx< list.size(); inx++) {
+			result[inx][0] = list.get(inx).get(3);
+			result[inx][1] = list.get(inx).get(0);
+			result[inx][2] = list.get(inx).get(1);
+		}
+		
+		return result;
+	}
+}
+
+public class MacAddress {
+	
+	/**
+	 * 입력받은 MAC주소를 검증하고 Type 3 형식으로 변환하여 리턴한다 (구현)
+	 * 
+	 * @param inputMac 입력 MAC주소
+	 * @return 변환된 MAC주소, 올바르지 않은 형식은 null을 리턴
+	 */
+	public String validateMacAddress(String inputMac) {
+		
+		String result = null;
+		
+		String type1 = type1Check(inputMac);
+		if( type1 != null ) result = type1;
+		String type2 = type2Check(inputMac);
+		if( type2 != null ) result = type2;
+		String type3 = type3Check(inputMac);
+		if( type3 != null ) result = type3;
+		
+		StringBuffer sb = new StringBuffer();
+		
+		if( result != null ) {
+			sb.append(result.substring(0, 4))
+			  .append(".")
+			  .append(result.substring(4,8))
+			  .append(".")
+			  .append(result.substring(8));
+			
+			result = sb.toString();
+		} 
+		
+		return result;
+	}
+	
+	public String type1Check(String input) {
+		
+		String newInput = null;
+		String[] arr = input.split("-");
+		
+		if( arr.length == 6 ) {
+			for(int inx=0; inx < arr.length; inx++ ) {
+				if( arr[inx].length() != 2 ) {
+					return newInput;
+				}else {
+					Pattern p = Pattern.compile("^[0-9a-zA-Z]*$");
+					Matcher m = p.matcher(arr[inx]);
+					if( !m.find() ) {
+						return newInput;
+					}					
+				}
+			}
+			
+			newInput = String.join("", arr).toLowerCase();
+		}
+		
+		return newInput;
+	}
+	
+public String type2Check(String input) {
+		
+		String newInput = null;
+		String[] arr = input.split(":");
+		
+		if( arr.length == 6 ) {
+			for(int inx=0; inx < arr.length; inx++ ) {
+				if( arr[inx].length() != 2 ) {
+					return newInput;
+				}else {
+					Pattern p = Pattern.compile("^[0-9a-zA-Z]*$");
+					Matcher m = p.matcher(arr[inx]);
+					if( !m.find() ) {
+						return newInput;
+					}					
+				}
+			}
+			
+			newInput = String.join("", arr).toLowerCase();
+		}
+		
+		return newInput;
+	}
+
+	public String type3Check(String input) {
+		
+		String newInput = null;
+		String[] arr = input.split("\\.");
+		
+		if( arr.length == 3 ) {
+			for(int inx=0; inx < arr.length; inx++ ) {
+				if( arr[inx].length() != 4 ) {
+					return newInput;
+				}else {
+					Pattern p = Pattern.compile("^[0-9a-zA-Z]*$");
+					Matcher m = p.matcher(arr[inx]);
+					if( !m.find() ) {
+						return newInput;
+					}					
+				}
+			}
+			
+			newInput = String.join("", arr).toLowerCase();
+		}
+		
+		return newInput;
+	}
+
+}
+
+public class Salary {
+
+	/**
+	 * 직급별 평균연봉을 출력하는 메소드(구현)
+	 * 
+	 * @param salary
+	 * @param employee
+	 * @return
+	 */
+	public String [][] print(String [][] salary, String[][] employee) {
+		
+		
+		Map<String, String> salaryMap = new HashMap<String, String>();
+		
+		for(int inx=0; inx < salary.length; inx++ ) {
+			salaryMap.put(salary[inx][0], salary[inx][1]);
+		}
+		
+		List<List<String>> list = new ArrayList<List<String>>();
+		
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Integer> count = new HashMap<String, Integer>();
+		
+		for(int inx=0; inx < employee.length; inx++ ) {
+			if( !result.containsKey(employee[inx][2]) ) {
+				result.put( employee[inx][2], Integer.parseInt(salaryMap.get(employee[inx][0])));
+				count.put(employee[inx][2], 1);
+			}else {
+				result.put( employee[inx][2], result.get(employee[inx][2]) + Integer.parseInt(salaryMap.get(employee[inx][0])));
+				count.put(employee[inx][2], count.get(employee[inx][2])+1);
+			}
+		}
+		
+		for(String key : result.keySet()) {
+			String[] arr = {key, String.valueOf(result.get(key)/count.get(key))};
+			list.add(Arrays.asList(arr));
+		}
+		
+		list.sort(new Comparator<List<String>>() {
+
+			@Override
+			public int compare(List<String> a, List<String> b) {				
+				int s_a = Integer.parseInt(a.get(1));
+				int s_b = Integer.parseInt(b.get(1));
+				
+				if( s_a > s_b ) {
+					return 1;
+				}else if ( s_a < s_b) {
+					return -1;
+				}else {
+					return 0;
+				}
+				
+			}
+		});
+		
+		String [][] results = new String[list.size()][2];
+		
+		for(int inx=0; inx < list.size(); inx++ ) {
+			results[inx][0]  = list.get(inx).get(0);
+			results[inx][1]  = list.get(inx).get(1);
+		}
+		
+		
+		return results;
+	}
+
+}
+
+public class SourceAnalyzer {
+	
+	private int javaFileCount = 0;
+	
+	private int totalLineCount = 0;
+	
+	private int findPatternFileCount = 0;
+	
+	private int totalPatternCount = 0;
+	
+    /**
+     * 전체 소스 개수를 반환하는 메소드.
+     * @return
+     */
+    public int getJavaFileCount() {
+        return javaFileCount;
+    }
+    
+    /**
+     * 문제 소스 개수를 반환하는 메소드.
+     * @return
+     */
+    public int getProblemFileCount() {
+        return findPatternFileCount;
+    }
+    
+    /**
+     * 소스 전체 Line 수를 반환하는 메소드.
+     * @return
+     */
+    public int getTotalLineCount() {
+        return totalLineCount;
+    }
+    
+    /**
+     * 검색된 패턴 수를 반환하는 메소드.
+     * @return
+     */
+    public int getPatternCount() {
+        return totalPatternCount;
+    }
+    
+	/**
+	 * 디렉토리 하위 java 파일을 분석하는 메소드.
+	 * 패턴을 검색할 소스코드는 주석을 포함한다.
+	 * 
+	 * @param dirName 분석 대상 디렉토리
+	 * @param pattern 분석 대상 패턴
+	 */
+	public void analyze(String dirName, String pattern) {
+		
+		dirName = dirName.replaceAll("/", "//");
+		
+		File dir = new File(dirName);
+		
+		String[] dirFiles = dir.list();
+		
+		for(int inx=0; inx < dirFiles.length; inx++) {
+			if( dirFiles[inx].toLowerCase().endsWith(".java") ) {
+				javaFileCount++;
+				
+				List<String> list = readFile(new File(dirName + "//" + dirFiles[inx]));	
+				
+				ListIterator<String> it = list.listIterator();
+				
+				StringBuffer sb = new StringBuffer();
+				
+				while(it.hasNext()) {
+					String s = it.next();
+					
+					if( s.replaceAll("\\s+", "").equals("") ) {
+						it.remove();
+					}else {						
+						sb.append(s.replaceAll("\\s+", ""));
+					}
+				}
+				
+				String newPattern = pattern.replaceAll("\\s+", "");
+				newPattern = newPattern.replaceAll("\\(", "\\\\(");
+				newPattern = newPattern.replaceAll("\\)", "\\\\)");
+				newPattern = newPattern.replaceAll("\\{", "\\\\{");
+				newPattern = newPattern.replaceAll("\\}", "\\\\}");
+				newPattern = newPattern.replaceAll("\\/", "\\\\/");
+				newPattern = newPattern.replaceAll("\\*", "[*]");
+				
+				Pattern p = Pattern.compile("("+newPattern+")");
+				
+				Matcher m = p.matcher(sb);
+				
+				//System.out.println(m.groupCount());
+				int count = 0;
+				
+				while( m.find() ) {
+					count++;
+				}
+				
+				if( count >0 ) {
+					findPatternFileCount++;
+				}
+				
+				totalPatternCount += count;
+				totalLineCount += list.size();
+			}			
+		}
+	}
+	
+	/**
+	 * 제공되는 파일의 내용을 line 단위로 읽어 String List로 리턴하는 메소드(제공).
+	 * @param file
+	 * @return
+	 */
+	private List<String> readFile(File file) {
+		List<String> strList = new ArrayList<String>();
+
+		BufferedReader buffer = null;
+		try {
+			buffer = new BufferedReader(new FileReader(file));
+			String line;
+			while ((line = buffer.readLine()) != null) {
+				//if( !line.equals("") )
+					strList.add(line);
+			}
+		} catch (IOException e) {
+			System.out.println("IOException occurred. " + e.getMessage());
+		} finally {
+			if (buffer != null) {
+				try {
+					buffer.close();
+				} catch (Exception e) {
+					System.out.println("Error occurred while closing buffer.");
+				}
+			}
+		}
+		return strList;
+	}
+}
