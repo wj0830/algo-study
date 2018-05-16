@@ -1,0 +1,442 @@
+public class LGStore {
+	
+	static final int  PRODUCT_TYPE_NUM = 13; // 편의점에서 판매하는 물품의 종류 개수.
+	static final int  MAX_KIND = 500;  // 하루 최대 판매된 물품 개수.
+	static final int  MAX_DISTINCTION_KIND = 100; // 최대 물품 종류 개수.
+	static final int MAX_TEXT_LENGTH = 20; // 물품코드의 최대 글자 수.
+	
+	/**
+	 * 제공된 데이터에서 숫자, 특수문자, 공백을 제거하고 소문자로 변환한다.
+	 *
+	 * @param[in] saleKind		판매된 물품 코드 문자열 배열
+	 * @param[in] saleNumber	판매된 물품의 개수
+	 * @return					숫자, 공백, 특수문자가 제거된 소문자 문자열 배열.
+	 */
+	public static String[] makeNormalData(String[] saleKind, int saleNumber) {
+		
+		String[]  retData= new String[MAX_KIND];
+	
+		/////////////////  여기부터 코딩 (1) -------->
+		
+		for( int inx=0; inx < saleNumber; inx++ ) {
+			retData[inx] = saleKind[inx].replaceAll("\\s+|0-9|%|!|&|#|@|[*]|[$]|[+]|[|]|\\(+|\\)+|\\[+|\\]+|\\{+|\\}+|\\^", "").toLowerCase();
+		}
+				
+	    /////////////////  <------------- 여기까지코딩 (1)
+    
+	    return retData; 
+}
+
+	/**
+	 * 순서가 바뀐 글자의 순서를 올바른 순서로 바로 잡는다.
+	 *
+	 * @param[in] saleKind		판매된 물품 코드 문자열 배열
+	 * @param[in] saleNumber	판매된 물품의 개수
+	 * @param[in] products		편의점에서 판매하는 물품 코드 배열 (13종 고정)
+	 * @return					글자의 순서가 올바른 순서로 정돈된 문자열 배열.
+	 */
+	public static String[] correctLetterOrder(String[] saleKind, int saleNumber, String[] products){
+		
+		String[]  retData= new String[MAX_KIND];
+		
+		/////////////////  여기부터 코딩 (2) -------->
+		Map<String, String> charSort = new HashMap<String, String>();
+		
+		for( int inx=0; inx<13; inx++) {
+			String newArr[] = products[inx].split("");
+			Arrays.sort(newArr);
+			
+			charSort.put(String.join("", newArr), products[inx] );
+		}
+		
+		for( int inx=0; inx<saleNumber; inx++) {
+			String newArr[] = saleKind[inx].split("");
+			Arrays.sort(newArr);
+			
+			String changeKey = String.join("", newArr);
+			
+			if( charSort.containsKey(changeKey) ) {
+				retData[inx] = charSort.get(changeKey);
+			}
+		}
+		
+		/////////////////  <------------- 여기까지코딩 (2)
+    
+		return retData; 
+	}
+
+
+	/**
+	 * 중복된 물품을 제거하고 정렬한다.
+	 *
+	 * @param[in] saleKind		소문자로만 구성된 물품 코드 문자열 배열
+	 * @param[in] saleNumber	판매된 물품의 개수
+	 * @return					중복이 제거된 문자열 배열
+	 */
+	public static String[] makeDistinctedData(String[] saleKind, int saleNumber) {
+
+		String[] retData=new String[MAX_DISTINCTION_KIND];
+		System.out.println( saleKind.length );
+		/////////////////  여기부터 코딩 (3) -------->
+		List<String> list = Arrays.asList(saleKind);
+		
+		List<String> resultList = new ArrayList<String>();
+		
+		for(int inx=0; inx<list.size(); inx++) {
+			if( !resultList.contains( list.get(inx)) ) {
+				resultList.add(list.get(inx));
+			}
+		}
+		System.out.println( resultList.size() );
+		resultList.sort(new Comparator<String>() {
+
+			@Override
+			public int compare(String a, String b) {				
+				char second_a = a.charAt(1);
+				char second_b = b.charAt(1);
+				
+				if(second_a > second_b) {
+					return 1;
+				}else if ( second_a < second_b ) {
+					return -1;
+				}else {
+					char first_a = a.charAt(0);
+					char first_b = b.charAt(0);
+					
+					if(first_a > first_b) {
+						return 1;
+					}else if ( first_a < first_b ) {
+						return -1;
+					}else {
+						return 0;
+					}					
+				}
+			}
+		});
+		resultList.toArray(retData);
+	    /////////////////  <------------- 여기까지코딩 (3)
+	    
+	    return retData; 
+	}
+
+}
+
+public class MaxSum {
+	static final int ARRAY_LENGTH = 5;
+	/**
+	 * 초기 배열 상태에서 음수는 0으로, 100보다 큰 수는 모두 100으로 나눈 나머지를 취한다.
+	 *
+	 * @param[in] numData	2차원 정수 배열
+	 * @return 				조건에 따라서 전처리된 2차원 배열
+	 */
+	public static int[][] replaceData(int[][] numData){
+		
+		int[][] retData = new int[ARRAY_LENGTH][ARRAY_LENGTH];
+		
+		////////////////////////// 여기부터 코딩 (1) ---------------->
+		for( int inx=0; inx < ARRAY_LENGTH; inx++ ) {
+			for(int jnx=0; jnx < ARRAY_LENGTH; jnx++) {
+				int data = numData[inx][jnx];
+				retData[inx][jnx] = data < 0 ? 0 : data > 100 ? data % 100 : data;
+			}
+		}	
+		
+		/////////////////////////// <-------------- 여기까지 코딩 (1)
+		
+		return retData; 
+	}
+
+	/**
+	 * 2x2 크기의 배열의 최대합을 구한다.
+	 *
+	 * @param[in] numData	요구 사항에 맞춰 처리된 2차원 정수 배열
+	 * @return				최대합
+	 */
+	public static int getMaxSum(int[][] numData){
+		
+		int maxSum = 0; 
+		
+		////////////////////////// 여기부터 코딩 (2) ---------------->
+		for( int inx=0; inx < ARRAY_LENGTH-1; inx++ ) {
+			for(int jnx=0; jnx < ARRAY_LENGTH-1; jnx++) {
+				int sum = numData[inx][jnx] + numData[inx][jnx+1] + numData[inx+1][jnx] + numData[inx+1][jnx+1];
+				
+				if( maxSum < sum ) {
+					maxSum = sum;
+				}
+			}
+		}	
+		
+		/////////////////////////// <-------------- 여기까지 코딩 (2)
+		
+		return maxSum; 
+	}
+}
+
+public class OverTime {
+	
+	static final int  MAX_SIZE = 128; // 최대 배열 행 개수.
+	static final int  COL_SIZE = 6;  // 배열의 열 개수(사번, 시작(시), 시작(분), 종료(시), 종료(분), 출장여부)
+	
+	/**
+	 * 원본 테이블을 정렬한다.
+	 *
+	 * @param[in] otTable		하루의 근무시간이 기록된 2차원 배열
+	 * @param[in] row			데이터의 건수(=행 개수)
+	 * @return					정렬된 2차원 테이블.
+	 */
+	public static int[][] sortTableByEmpno(int[][] otTable, int row) {
+		
+		int retTable[][] = new int[MAX_SIZE][6]; 
+		
+		/////////////////  여기부터 코딩 (1) -------->
+		
+		List<int[]> list = new ArrayList<int[]>();
+		
+		for( int inx=0; inx < row; inx++ ) {
+			list.add(otTable[inx]);
+		}
+		
+		list.sort(new Comparator<int[]>() {
+
+			@Override
+			public int compare(int[] a, int[] b) {
+				
+				if( a[0] > b[0] ) {
+					return 1;
+				}else if ( a[0] < b[0] ) {
+					return -1;
+				}else {
+					int time_a = a[1]*60 + a[2];
+					int time_b = b[1]*60 + b[2];
+					
+					if( time_a > time_b ) {
+						return 1;
+					}else if( time_a < time_b ) {
+						return -1;
+					}else {
+						return 0;
+					}					
+				}
+				
+			}			
+		});
+		
+		for( int inx=0; inx < row; inx++ ) {
+			retTable[inx] = list.get(inx);
+		}
+		
+	    /////////////////  <------------- 여기까지코딩 (1)
+	    
+	    return retTable; 
+	}
+
+
+	/**
+	 * 정상적으로 초과근무를 한 사원수를 구한다.
+	 *
+	 * @param[in] otTable		하루의 근무시간이 기록된 2차원 배열
+	 * @param[in] row			데이터의 건수(=행 개수)
+	 * @return					정상적으로 초과근무한 사원 수
+	 */
+	public static int countEmployeeNumber(int otTable[][], int row) {
+		
+		int empNumber=0; 
+		
+		/////////////////  여기부터 코딩 (2) -------->
+		List<int[]> list = new ArrayList<int[]>();
+		
+		for( int inx=0; inx < row; inx++ ) {
+			if( otTable[inx][3] == 0 && otTable[inx][4] == 0 ) {
+				//제외
+			}else {
+				list.add(otTable[inx]);
+			}
+		}
+		
+		List<Integer> result = new ArrayList<Integer>();
+		
+		for( int inx=0; inx < list.size(); inx++ ) {
+			if( !result.contains(list.get(inx)[0])) {
+				result.add(list.get(inx)[0]);
+			}
+		}
+		empNumber = result.size();
+	    /////////////////  <------------- 여기까지코딩 (2)
+	    
+	    return empNumber; 
+	}
+
+
+	/**
+	 * 총 사원별 초과 근무시간 테이블을 만든다.
+	 *
+	 * @param[in] otTable		사원번호로 오름차순 정렬된 2차원 배열
+	 * @param[in] row			데이터의 건수(=행 개수)
+	 * @@return					총 초과 근무시간이 계산된 2차원 테이블.
+	 */
+	public static int[][] makeTotalTable(int otTable[][], int row) {
+		
+		int[][] retTable=new int[MAX_SIZE][2];  
+		
+		/////////////////  여기부터 코딩 (3) -------->
+		List<int[]> list = new ArrayList<int[]>();
+		
+		for( int inx=0; inx < row; inx++ ) {
+			if( otTable[inx][3] == 0 && otTable[inx][4] == 0 ) {
+				//제외
+			}else {				
+				list.add(otTable[inx]);
+			}
+		}
+		
+		Map<Integer, Integer> result = new LinkedHashMap<Integer,Integer>();
+		
+		int empId = 0;
+		int startTime = 0;
+		int endTime = 0;
+		int exceed = 0;
+		
+		for( int inx=0; inx < list.size(); inx++ ) {					
+			if( !result.containsKey(list.get(inx)[0]) ) {				
+				result.put(list.get(inx)[0], 0);			
+				
+				if( empId != list.get(inx)[0] ) {
+					if ( empId != 0 ) {						
+						Double total = (( endTime - startTime ) * ( exceed == 1 ? 1.5 : 1 ));
+						result.put(empId, total.intValue());
+						exceed = 0;
+					}
+				}
+				
+				empId = list.get(inx)[0];
+				startTime = list.get(inx)[1] * 60 + list.get(inx)[2];
+				endTime = list.get(inx)[3] * 60 + list.get(inx)[4];
+				if( list.get(inx)[5] != 0 ) exceed = list.get(inx)[5];
+				
+				if ( list.size()-1 == inx ) {
+					Double total = (( endTime - startTime ) * ( exceed == 1 ? 1.5 : 1 ));
+					result.put(empId, total.intValue());
+					exceed = 0;
+				}
+			}else {
+				endTime = ( endTime > list.get(inx)[3] * 60 + list.get(inx)[4] ) ? endTime: list.get(inx)[3] * 60 + list.get(inx)[4];
+				if( list.get(inx)[5] != 0 ) exceed = list.get(inx)[5];
+			}
+			
+		}
+		
+		int index = 0;
+		for( Map.Entry<Integer, Integer> mapEntry : result.entrySet() ) {
+			retTable[index][0] = mapEntry.getKey();
+			retTable[index][1] = mapEntry.getValue();
+			index++;
+		}
+		
+	    /////////////////  <------------- 여기까지코딩 (3)
+	    
+	    return retTable;  
+
+	}
+
+
+}
+
+public class PictureCorrection {
+	static final int  MAX_SIZE =  128; // 최대 사진 크기.
+	
+	/**
+	 * 2차원 사진  배열을 좌우 반전 시킨다.
+	 *
+	 * @param[in] photoAry	2차원 사진 배열
+	 * @param[in] height	사진 배열의 행 개수
+	 * @param[in] width		사진 배열의 열 개수
+	 * @return 				좌우 반전된 2차원 사진 배열
+	 */
+	public static char[][] reversalPhoto(char photoAry[][], int height, int width) {
+		char[][] retAry;
+		retAry=new char[MAX_SIZE][MAX_SIZE]; // 사진을 좌우 반전시킨 2차원 배열. 
+		int i,k;
+	    for ( i=0; i<height; i++) {
+	    	for ( k=0; k<width; k++) {
+	            retAry[i][width-k-1] = photoAry[i][k];
+	        }
+	    }
+	    return retAry; // 좌우 반전된 2차원 배열. 
+	}
+
+	/**
+	 * 2차원 사진  배열을 2배 확대 시킨다.
+	 *
+	 * @param[in] photoAry	2차원 사진 배열
+	 * @param[in] height	사진 배열의 행 개수
+	 * @param[in] width		사진 배열의 열 개수
+	 * @return				2배 확대된 2차원 사진 배열
+	 */
+	public static char[][] zoomScale(char photoAry[][], int height, int width) {
+		
+		char[][] retAry=new char[MAX_SIZE][MAX_SIZE];  
+		int i,k;	
+		
+		for ( i=0; i<height*2; i++) {
+	    	for ( k=0; k<width*2; k++) {
+				retAry[i][k] = photoAry[i/2][k/2];
+			}
+		}
+	    
+	    return retAry; 
+	}
+
+	/**
+	 * 2차원 사진 배열을 왼쪽으로 90도 회전시킨다.
+	 *
+	 * @param[in] photoAry	2차원 사진 배열
+	 * @param[in] height	사진 배열의 행 개수
+	 * @param[in] width		사진 배열의 열 개수
+ 	 * @return				왼쪽으로 90도 회전된 2차원 사진 배열
+	 */
+	public static char[][] rotatePhoto(char photoAry[][], int height, int width) {
+		
+		char[][] retAry=new char[MAX_SIZE][MAX_SIZE];  
+		
+		int i,k;
+		
+		System.out.println( width );
+		
+		for ( i=0; i<height; i++) {
+	    	for ( k=0; k<width; k++) {
+				retAry[width-k-1][i] = photoAry[i][k];
+			}
+		}
+		
+	    return retAry; 
+	}
+
+	/**
+	 * 2차원 사진 배열에 테두리를 추가한다.
+	 *
+	 * @param[in] photoAry	2차원 사진 배열
+	 * @param[in] height	사진 배열의 행 개수
+	 * @param[in] width		사진 배열의 열 개수
+	 * @return				테두리가 추가된 2차원 사진 배열
+	 */
+	public static char[][] drawEdge(char photoAry[][], int height, int width) {
+		char[][] retAry=new char[MAX_SIZE][MAX_SIZE]; 
+		
+		int i,k;
+		
+		for ( i=0; i<height+2; i++) {
+	    	for ( k=0; k<width+2; k++) {
+				retAry[i][k] = '*';
+			}
+		}
+		
+		for ( i=1; i<height+1; i++) {
+	    	for ( k=1; k<width+1; k++) {
+				retAry[i][k] = photoAry[i-1][k-1];
+			}
+		}
+	    
+	    return retAry; 
+	}
+}
